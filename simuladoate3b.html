@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado de Inglês - Nível A1</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #1a73e8;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #timer {
+            font-size: 1.2em;
+            font-weight: bold;
+            background-color: #d93025;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .question-card {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        .question-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options li {
+            margin-bottom: 10px;
+        }
+        label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1557b0;
+        }
+        .result-container {
+            display: none;
+            text-align: left;
+        }
+        .score-display {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #e6f4ea;
+            color: #137333;
+            border-radius: 8px;
+        }
+        .correct-answer {
+            color: #137333;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .wrong-answer {
+            color: #d93025;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .review-item {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Simulado de Inglês - American English File Starter</h1>
+    <div id="timer">Tempo restante: 60:00</div>
+</header>
+
+<div class="container" id="quiz-container">
+    <p>Responda as 40 questões abaixo. O teste vale 10 pontos no total (0,25 por questão). Boa sorte!</p>
+    <form id="quiz-form"></form>
+    <button type="button" id="submit-btn" onclick="submitQuiz()">Finalizar Simulado</button>
+</div>
+
+<div class="container result-container" id="result-container">
+    <div class="score-display" id="score-display"></div>
+    <h3>Revisão das Respostas:</h3>
+    <div id="review-container"></div>
+    <button type="button" onclick="location.reload()">Refazer Simulado</button>
+</div>
+
+<script>
+    const questions = [
+        { q: "1. '_____ you from Brazil?'", options: ["Am", "Are", "Is"], correct: 1 },
+        { q: "2. I _____ not married.", options: ["am", "is", "are"], correct: 0 },
+        { q: "3. She _____ from the US. She is from Canada.", options: ["aren't", "am not", "isn't"], correct: 2 },
+        { q: "4. _____ they in room 4?", options: ["Is", "Are", "Am"], correct: 1 },
+        { q: "5. What _____ your name?", options: ["is", "am", "are"], correct: 0 },
+        { q: "6. We _____ tourists. We are here on business.", options: ["isn't", "aren't", "am not"], correct: 1 },
+        { q: "7. Robert Downey Jr. _____ from New York.", options: ["am", "is", "are"], correct: 1 },
+        { q: "8. 'Are you a teacher?' 'No, I _____.'", options: ["aren't", "isn't", "am not"], correct: 2 },
+        { q: "9. 'Is Lima in Mexico?' 'No, it _____.'", options: ["isn't", "aren't", "is"], correct: 0 },
+        { q: "10. '_____ your phone number 555-1234?'", options: ["Is", "Are", "Am"], correct: 0 },
+        { q: "11. He is from Spain. He is _____.", options: ["Spanish", "Spainish", "Spanol"], correct: 0 },
+        { q: "12. I'm from _____. I am Chinese.", options: ["Chinese", "China", "Chino"], correct: 1 },
+        { q: "13. Sushi is from Japan. It is _____.", options: ["Japan", "Japanese", "Japonese"], correct: 1 },
+        { q: "14. They are from the UK. They are _____.", options: ["American", "British", "English"], correct: 1 },
+        { q: "15. 'Where's he from?' 'He's from _____.'", options: ["Brazilian", "Canadian", "Canada"], correct: 2 },
+        { q: "16. Monday, Tuesday, _____, Thursday.", options: ["Friday", "Wednesday", "Sunday"], correct: 1 },
+        { q: "17. How do you say '15'?", options: ["fifty", "fiveteen", "fifteen"], correct: 2 },
+        { q: "18. How do you write '80'?", options: ["eighteen", "eighty", "eight"], correct: 1 },
+        { q: "19. The day after Friday is _____.", options: ["Thursday", "Sunday", "Saturday"], correct: 2 },
+        { q: "20. 'How much _____ a burger?' 'It's $8.00.'", options: ["is", "are", "am"], correct: 0 },
+        { q: "21. 'How much are these key chains?' '_____ $5.00.'", options: ["It's", "They're", "Are"], correct: 1 },
+        { q: "22. $12.75 is:", options: ["twelve dollars and seventy-five cents", "twenty dollars and fifty cents", "twelve dollars and fifteen cents"], correct: 0 },
+        { q: "23. How do you say 100?", options: ["one hundred", "one thousand", "ten zero"], correct: 0 },
+        { q: "24. '47' is:", options: ["forty-seven", "fourteen-seven", "four-seven"], correct: 0 },
+        { q: "25. The day before Sunday is _____.", options: ["Monday", "Saturday", "Friday"], correct: 1 },
+        { q: "26. It's _____ umbrella.", options: ["a", "an", "the"], correct: 1 },
+        { q: "27. What is it? It's _____ laptop.", options: ["a", "an", "two"], correct: 0 },
+        { q: "28. The plural of 'watch' is:", options: ["watchs", "watches", "watch"], correct: 1 },
+        { q: "29. The plural of 'country' is:", options: ["countrys", "countries", "countres"], correct: 1 },
+        { q: "30. What are they? They're _____.", options: ["dictionarys", "a dictionary", "dictionaries"], correct: 2 },
+        { q: "31. (Perto/Singular) _____ is my cell phone.", options: ["This", "That", "These"], correct: 0 },
+        { q: "32. (Longe/Plural) What are _____ over there?", options: ["these", "those", "this"], correct: 1 },
+        { q: "33. (Perto/Plural) Are _____ your keys here?", options: ["these", "those", "that"], correct: 0 },
+        { q: "34. (Longe/Singular) Is _____ a Yankees T-shirt over there?", options: ["this", "that", "these"], correct: 1 },
+        { q: "35. 'What are those?' '_____ are caps.'", options: ["Those", "They", "These"], correct: 1 },
+        { q: "36. '_____ do you spell your last name?' 'A-L-V-E-S.'", options: ["What", "How", "Where"], correct: 1 },
+        { q: "37. '_____ are you?' 'I'm 33.'", options: ["How", "What old", "How old"], correct: 2 },
+        { q: "38. 'Open your _____, please.'", options: ["board", "books", "sit"], correct: 1 },
+        { q: "39. '_____ me. What's obrigado in English?'", options: ["Excuse", "Sorry", "Look"], correct: 0 },
+        { q: "40. 'I don't _____.'", options: ["know", "spell", "open"], correct: 0 }
+    ];
+
+    const form = document.getElementById('quiz-form');
+    let timer;
+    let timeLeft = 3600; // 60 minutes in seconds
+
+    // Render Questions
+    questions.forEach((q, index) => {
+        let questionHTML = `<div class="question-card">
+            <div class="question-title">${q.q}</div>
+            <ul class="options">`;
+        
+        q.options.forEach((opt, i) => {
+            questionHTML += `
+                <li>
+                    <label>
+                        <input type="radio" name="q${index}" value="${i}">
+                        ${String.fromCharCode(97 + i)}) ${opt}
+                    </label>
+                </li>`;
+        });
+        
+        questionHTML += `</ul></div>`;
+        form.innerHTML += questionHTML;
+    });
+
+    // Timer Logic
+    function startTimer() {
+        timer = setInterval(function() {
+            timeLeft--;
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            document.getElementById('timer').innerText = `Tempo restante: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                alert("Tempo esgotado! O simulado será finalizado automaticamente.");
+                submitQuiz();
+            }
+        }, 1000);
+    }
+
+    // Submit Logic
+    function submitQuiz() {
+        clearInterval(timer);
+        let score = 0;
+        let reviewHTML = "";
+
+        questions.forEach((q, index) => {
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            let userAnswer = selected ? parseInt(selected.value) : -1;
+            
+            let isCorrect = userAnswer === q.correct;
+            if (isCorrect) score += 0.25;
+
+            let answerText = userAnswer !== -1 ? q.options[userAnswer] : "Não respondida";
+            let correctAnswerText = q.options[q.correct];
+
+            reviewHTML += `
+                <div class="review-item">
+                    <div class="question-title">${q.q}</div>
+                    <div>Sua resposta: <strong>${answerText}</strong></div>
+                    ${isCorrect 
+                        ? `<div class="correct-answer">✅ Correto!</div>` 
+                        : `<div class="wrong-answer">❌ Incorreto. A resposta certa é: ${String.fromCharCode(97 + q.correct)}) ${correctAnswerText}</div>`
+                    }
+                </div>`;
+        });
+
+        document.getElementById('quiz-container').style.display = 'none';
+        document.getElementById('result-container').style.display = 'block';
+        
+        document.getElementById('score-display').innerHTML = `Sua nota final é: ${score.toFixed(2)} / 10.00`;
+        document.getElementById('review-container').innerHTML = reviewHTML;
+        
+        window.scrollTo(0, 0);
+    }
+
+    // Start timer on load
+    window.onload = startTimer;
+</script>
+
+</body>
+</html>
