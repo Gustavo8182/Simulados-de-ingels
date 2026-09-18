@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Modo Normal - Simulado de Inglês</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --header-bg: #2980b9;
+            --primary-color: #2980b9;
+            --danger-color: #e74c3c;
+            --success-color: #27ae60;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+        }
+
+        #timer {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            font-weight: bold;
+            background-color: var(--danger-color);
+            padding: 8px 12px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .intro-text {
+            font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+            margin-bottom: 20px;
+            color: #555;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .question-card {
+            background-color: white;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .question-title {
+            font-size: 1.15em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .diagram-box {
+            background-color: #edf2f7;
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            font-size: 2.5em;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .arrow-near {
+            color: #2980b9;
+            font-size: 0.8em;
+        }
+
+        .arrow-far {
+            color: #e74c3c;
+            font-size: 0.8em;
+            letter-spacing: 5px;
+        }
+
+        .options {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .options label {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #fdfdfd;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.05em;
+            margin: 0;
+        }
+
+        .options label:active {
+            background-color: #eaf4fc;
+        }
+
+        input[type="radio"] {
+            transform: scale(1.4);
+            margin-right: 15px;
+            accent-color: var(--primary-color);
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.05em;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .text-input:focus {
+            border-color: var(--primary-color);
+            background-color: #fdfdfd;
+        }
+
+        .btn-submit {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 6px rgba(41, 128, 185, 0.3);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+            background-color: #1f618d;
+        }
+
+        #result-container { display: none; }
+
+        .score-box {
+            text-align: center;
+            padding: 25px 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-size: clamp(1.3em, 4vw, 1.8em);
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .score-good { background-color: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
+        .score-bad { background-color: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
+
+        .review-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .review-answer {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            line-height: 1.5;
+        }
+
+        .correct-text { color: var(--success-color); font-weight: bold; display: block; margin-top: 5px; }
+        .wrong-text { color: var(--danger-color); font-weight: bold; display: block; margin-top: 5px; }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Modo Normal</h1>
+    <div id="timer">60:00</div>
+</header>
+
+<div class="container" id="quiz-container">
+    <div class="intro-text">
+        <strong>Instruções:</strong> Este simulado contém 30 questões de múltipla escolha e 10 questões para digitar. Atenção às imagens para responder sobre <em>this, that, these e those</em>.
+    </div>
+    <form id="quiz-form"></form>
+    <button type="button" class="btn-submit" onclick="submitQuiz()">Entregar Prova</button>
+</div>
+
+<div class="container" id="result-container">
+    <div id="score-display" class="score-box"></div>
+    <h2 style="color: #2c3e50; text-align: center;">Revisão das Questões</h2>
+    <div id="review-container"></div>
+    <button type="button" class="btn-submit" onclick="window.location.href='index.html'" style="background-color: #2c3e50; box-shadow: 0 4px 6px rgba(44, 62, 80, 0.3);">Voltar ao Menu</button>
+</div>
+
+<script>
+    const questions = [
+        { type: "radio", q: "1. '_____ your first name?'", options: ["What's", "How's", "Where's"], correct: 0 },
+        { type: "radio", q: "2. 'Are you on vacation?' 'No, we _____.'", options: ["aren't", "isn't", "am not"], correct: 0 },
+        { type: "radio", q: "3. '_____ is Mark Zuckerberg from?'", options: ["What", "Where", "How"], correct: 1 },
+        { type: "radio", q: "4. Avril Lavigne is from Canada. She is _____.", options: ["Canadian", "Canada", "Canadense"], correct: 0 },
+        { type: "radio", q: "5. I am from Brazil. I speak _____.", options: ["Portuguese", "Spanish", "Brazilian"], correct: 0 },
+        { type: "radio", q: "6. 'Where are _____ from?' 'They're from Scotland.'", options: ["they", "he", "we"], correct: 0 },
+        { type: "radio", q: "7. 'Is Salma Hayek from Mexico?' 'Yes, _____.'", options: ["she is", "is she", "she's"], correct: 0 },
+        { type: "radio", q: "8. 'Are we in room 10?' 'No, you _____ in room 9.'", options: ["are", "aren't", "is"], correct: 0 },
+        { type: "radio", q: "9. 'Look _____ the board, please.'", options: ["at", "in", "to"], correct: 0 },
+        { type: "radio", q: "10. 'I don't _____.'", options: ["understand", "repeat", "sorry"], correct: 0 },
+        
+        // Questões visuais de Pronomes Demonstrativos
+        { type: "radio", image: `<div class="diagram-box">🧍‍♂️ <span class="arrow-near">➡</span> ☕</div>`, q: "11. Look at the image (Near / Perto). 'How much is _____ mug?'", options: ["this", "that", "those"], correct: 0 },
+        { type: "radio", image: `<div class="diagram-box">🧍‍♂️ <span class="arrow-far">➡ ➡ ➡</span> 👕</div>`, q: "12. Look at the image (Far / Longe). 'Is _____ a Yankees T-shirt?'", options: ["these", "this", "that"], correct: 2 },
+        { type: "radio", image: `<div class="diagram-box">🧍‍♂️ <span class="arrow-near">➡</span> 🔑🔑</div>`, q: "13. Look at the image (Near / Perto). 'Are _____ your keys?'", options: ["those", "these", "this"], correct: 1 },
+        { type: "radio", image: `<div class="diagram-box">🧍‍♂️ <span class="arrow-far">➡ ➡ ➡</span> 🧢🧢</div>`, q: "14. Look at the image (Far / Longe). 'What are _____?'", options: ["those", "that", "these"], correct: 0 },
+
+        { type: "radio", q: "15. 'How much _____ these key chains?'", options: ["are", "is", "am"], correct: 0 },
+        { type: "radio", q: "16. 'Can I have a cheese sandwich, _____?'", options: ["please", "excuse me", "sorry"], correct: 0 },
+        { type: "radio", q: "17. 'Here is your _____.'", options: ["change", "price", "dollars"], correct: 0 },
+        { type: "radio", q: "18. 'A table _____ tomorrow, please.'", options: ["for", "to", "at"], correct: 0 },
+        
+        { type: "radio", image: `<div class="diagram-box">🧍‍♂️ <span class="arrow-far">➡ ➡ ➡</span> 🚌</div>`, q: "19. Look at the image (Far / Longe). '_____ is the bus to San Francisco over there.'", options: ["That", "This", "These"], correct: 0 },
+        
+        { type: "radio", q: "20. 'Are those your keys?' 'Yes, _____.'", options: ["they are", "those are", "these are"], correct: 0 },
+        { type: "radio", q: "21. '_____ camera.'", options: ["A", "An", "Two"], correct: 0 },
+        { type: "radio", q: "22. '_____ umbrella.'", options: ["An", "A", "The"], correct: 0 },
+        { type: "radio", q: "23. 'Who's that?' 'She is _____ English teacher.'", options: ["my", "an", "a"], correct: 0 },
+        { type: "radio", q: "24. '_____ is she?' 'She's 25.'", options: ["How old", "What old", "Who"], correct: 0 },
+        { type: "radio", q: "25. '_____ your cell phone number?'", options: ["What's", "How's", "Where's"], correct: 0 },
+        { type: "radio", q: "26. $12.75 is:", options: ["twelve dollars and seventy-five cents", "twelve seventy-five dollars", "twenty dollars and fifteen cents"], correct: 0 },
+        { type: "radio", q: "27. 'Are you married?' 'No, I'm _____.'", options: ["single", "student", "tired"], correct: 0 },
+        { type: "radio", q: "28. 'What's _____ zip code?'", options: ["your", "you", "yours"], correct: 0 },
+        { type: "radio", q: "29. The plural of 'dictionary' is:", options: ["dictionaries", "dictionarys", "dictionary"], correct: 0 },
+        
+        { type: "radio", image: `<div class="diagram-box">🧍‍♂️ <span class="arrow-near">➡</span> ☕</div>`, q: "30. Look at the image (Near / Perto). 'How much is _____ mug?' 'It's $5.00.'", options: ["this", "these", "those"], correct: 0 },
+        
+        // Questões Textuais (Digitação)
+        { type: "text", q: "31. Write the number 15 in English:", correct: ["fifteen"] },
+        { type: "text", q: "32. Fill in the blank: '_____ are you from?'", correct: ["where"] },
+        { type: "text", q: "33. The plural of 'city' is:", correct: ["cities"] },
+        { type: "text", q: "34. Fill in the blank: 'How _____ is this burger?' 'It's $8.00.'", correct: ["much"] },
+        { type: "text", q: "35. Write the nationality for Japan:", correct: ["japanese"] },
+        { type: "text", q: "36. What is the day after Monday?", correct: ["tuesday"] },
+        { type: "text", q: "37. Fill in the blank: '_____ you single?' 'No, I'm married.'", correct: ["are"] },
+        { type: "text", q: "38. The plural of 'watch' is:", correct: ["watches"] },
+        { type: "text", q: "39. Write the number 80 in words:", correct: ["eighty"] },
+        { type: "text", q: "40. Fill in the blank: '_____ do you spell your name?'", correct: ["how"] }
+    ];
+
+    const form = document.getElementById('quiz-form');
+    let timeLeft = 3600; 
+    let timer;
+
+    questions.forEach((q, index) => {
+        let qHTML = `<div class="question-card">`;
+        
+        if (q.image) {
+            qHTML += q.image;
+        }
+
+        qHTML += `<div class="question-title">${q.q}</div>`;
+        
+        if (q.type === "radio") {
+            qHTML += `<div class="options">`;
+            q.options.forEach((opt, i) => {
+                qHTML += `<label><input type="radio" name="q${index}" value="${i}"> ${opt}</label>`;
+            });
+            qHTML += `</div>`;
+        } else if (q.type === "text") {
+            qHTML += `<input type="text" name="q${index}" class="text-input" placeholder="Digite em inglês..." autocomplete="off" autocorrect="off" spellcheck="false">`;
+        }
+        
+        qHTML += `</div>`;
+        form.innerHTML += qHTML;
+    });
+
+    function startTimer() {
+        timer = setInterval(() => {
+            timeLeft--;
+            let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            let s = (timeLeft % 60).toString().padStart(2, '0');
+            document.getElementById('timer').innerText = `${m}:${s}`;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                alert("O tempo acabou! Enviando respostas...");
+                submitQuiz();
+            }
+        }, 1000);
+    }
+
+    function submitQuiz() {
+        clearInterval(timer);
+        window.scrollTo(0, 0); 
+        let score = 0;
+        let reviewHTML = "";
+
+        questions.forEach((q, index) => {
+            let isCorrect = false;
+            let userText = "";
+            let correctText = "";
+
+            if (q.type === "radio") {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const ansIndex = selected ? parseInt(selected.value) : -1;
+                isCorrect = ansIndex === q.correct;
+                userText = ansIndex !== -1 ? q.options[ansIndex] : "Em branco";
+                correctText = q.options[q.correct];
+            } else if (q.type === "text") {
+                const inputEl = document.querySelector(`input[name="q${index}"]`);
+                userText = inputEl ? inputEl.value.trim() : "";
+                isCorrect = q.correct.includes(userText.toLowerCase());
+                correctText = q.correct[0]; 
+                if (userText === "") userText = "Em branco";
+            }
+            
+            if (isCorrect) score += 0.25;
+
+            reviewHTML += `
+                <div class="review-item">
+                    <div class="question-title">${q.q}</div>
+                    <div class="review-answer">
+                        <span>Sua resposta: <strong>${userText}</strong></span>
+                        ${isCorrect 
+                            ? `<span class="correct-text">✔ Acertou!</span>` 
+                            : `<span class="wrong-text">✖ Errou. Correta: ${correctText}</span>`}
+                    </div>
+                </div>
+            `;
+        });
+
+        document.getElementById('quiz-container').style.display = 'none';
+        document.getElementById('result-container').style.display = 'block';
+        
+        const scoreBox = document.getElementById('score-display');
+        scoreBox.innerHTML = `Sua Nota<br><span style="font-size: 1.5em">${score.toFixed(2)}</span> / 10.00`;
+        scoreBox.className = `score-box ${score >= 7 ? 'score-good' : 'score-bad'}`;
+        
+        document.getElementById('review-container').innerHTML = reviewHTML;
+    }
+
+    window.onload = startTimer;
+</script>
+
+</body>
+</html>

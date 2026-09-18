@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Modo Hard - Simulado de Inglês</title>
+    <style>
+        :root {
+            --bg-color: #fcf3f2;
+            --text-color: #333;
+            --header-bg: #c0392b;
+            --primary-color: #c0392b;
+            --danger-color: #e74c3c;
+            --success-color: #27ae60;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+        }
+
+        #timer {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            font-weight: bold;
+            background-color: #fff;
+            color: var(--header-bg);
+            padding: 8px 12px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .intro-text {
+            font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+            margin-bottom: 20px;
+            color: #555;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .question-card {
+            background-color: white;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .question-title {
+            font-size: 1.15em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .diagram-box {
+            background-color: #fdf5f5;
+            border: 2px dashed #e6b0aa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            font-size: 2.5em;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .arrow-near { color: #c0392b; font-size: 0.8em; }
+        .arrow-far { color: #e74c3c; font-size: 0.8em; letter-spacing: 5px; }
+
+        .options {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .options label {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #fdfdfd;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.05em;
+            margin: 0;
+        }
+
+        .options label:active {
+            background-color: #fdedec;
+        }
+
+        input[type="radio"] {
+            transform: scale(1.4);
+            margin-right: 15px;
+            accent-color: var(--primary-color);
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.05em;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .text-input:focus {
+            border-color: var(--primary-color);
+            background-color: #fdfdfd;
+        }
+
+        .btn-submit {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 6px rgba(192, 57, 43, 0.3);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+            background-color: #922b21;
+        }
+
+        #result-container { display: none; }
+
+        .score-box {
+            text-align: center;
+            padding: 25px 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-size: clamp(1.3em, 4vw, 1.8em);
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .score-good { background-color: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
+        .score-bad { background-color: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
+
+        .review-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .review-answer {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            line-height: 1.5;
+        }
+
+        .correct-text { color: var(--success-color); font-weight: bold; display: block; margin-top: 5px; }
+        .wrong-text { color: var(--danger-color); font-weight: bold; display: block; margin-top: 5px; }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Modo Hard</h1>
+    <div id="timer">60:00</div>
+</header>
+
+<div class="container" id="quiz-container">
+    <div class="intro-text">
+        <strong>Atenção:</strong> 75% das questões exigem que você <strong>digite</strong> a resposta em inglês (ortografia conta!). O nível das perguntas aumentou. Tempo: 1 hora.
+    </div>
+    <form id="quiz-form"></form>
+    <button type="button" class="btn-submit" onclick="submitQuiz()">Entregar Prova (Hard)</button>
+</div>
+
+<div class="container" id="result-container">
+    <div id="score-display" class="score-box"></div>
+    <h2 style="color: #c0392b; text-align: center;">Revisão das Questões</h2>
+    <div id="review-container"></div>
+    <button type="button" class="btn-submit" onclick="window.location.href='index.html'" style="background-color: #333;">Voltar ao Menu</button>
+</div>
+
+<script>
+    const questions = [
+        // MÚLTIPLA ESCOLHA (10 Questões focadas em interpretação visual e gramática pontual)
+        { type: "radio", image: `<div class="diagram-box">🧍‍♂️ <span class="arrow-far">➡ ➡ ➡</span> 🗝️🗝️</div>`, q: "1. Look at the image (Far). 'What are _____?'", options: ["those", "these", "this"], correct: 0 },
+        { type: "radio", image: `<div class="diagram-box">🧍‍♂️ <span class="arrow-near">➡</span> 📚</div>`, q: "2. Look at the image (Near). 'Is _____ a good dictionary?'", options: ["that", "this", "these"], correct: 1 },
+        { type: "radio", q: "3. 'Mark Zuckerberg is from the USA.' His nationality is:", options: ["USA", "American", "United States"], correct: 1 },
+        { type: "radio", q: "4. '_____ you single?' 'No, I'm married.'", options: ["Are", "Is", "Am"], correct: 0 },
+        { type: "radio", q: "5. 'Is Salma Hayek from Mexico?' 'Yes, _____.'", options: ["she is", "she's", "is she"], correct: 0 },
+        { type: "radio", q: "6. 'Are they in room 12?' 'Yes, _____.'", options: ["they are", "are they", "they're"], correct: 0 },
+        { type: "radio", q: "7. Choose the correct question: '_____ do you spell your last name?'", options: ["What", "How", "Where"], correct: 1 },
+        { type: "radio", q: "8. 'We _____ tourists. We are here on business.'", options: ["aren't", "isn't", "are"], correct: 0 },
+        { type: "radio", q: "9. Which article is correct? 'It is _____ ID card.'", options: ["a", "the", "an"], correct: 2 },
+        { type: "radio", q: "10. 'A table _____ tomorrow, please.'", options: ["to", "for", "at"], correct: 1 },
+
+        // DIGITAÇÃO (30 Questões - Ortografia exata necessária)
+        { type: "text", q: "11. Write the number 91 in English:", correct: ["ninety-one", "ninety one"] },
+        { type: "text", q: "12. Write the number 14 in English:", correct: ["fourteen"] },
+        { type: "text", q: "13. Write the number 40 in English:", correct: ["forty"] },
+        { type: "text", q: "14. Write the number 8 in English:", correct: ["eight"] },
+        { type: "text", q: "15. The plural of 'watch' is:", correct: ["watches"] },
+        { type: "text", q: "16. The plural of 'country' is:", correct: ["countries"] },
+        { type: "text", q: "17. The plural of 'address' is:", correct: ["addresses"] },
+        { type: "text", q: "18. The plural of 'glass' is:", correct: ["glasses"] },
+        { type: "text", q: "19. The plural of 'city' is:", correct: ["cities"] },
+        { type: "text", q: "20. Write the nationality of Peru:", correct: ["peruvian"] },
+        { type: "text", q: "21. Write the nationality of Saudi Arabia:", correct: ["saudi"] },
+        { type: "text", q: "22. Write the nationality of China:", correct: ["chinese"] },
+        { type: "text", q: "23. Fill in the blank: 'How _____ is this bag?' 'It's $25.'", correct: ["much"] },
+        { type: "text", q: "24. Fill in the blank: '_____ are you from?' 'I am from Canada.'", correct: ["where"] },
+        { type: "text", q: "25. Fill in the blank: '_____ old are you?' 'I'm 23.'", correct: ["how"] },
+        { type: "text", q: "26. Write the opposite of 'yes':", correct: ["no"] },
+        { type: "text", q: "27. Translate to English: 'terça-feira'", correct: ["tuesday"] },
+        { type: "text", q: "28. Translate to English: 'quinta-feira'", correct: ["thursday"] },
+        { type: "text", q: "29. What is the day before Saturday?", correct: ["friday"] },
+        { type: "text", q: "30. What is the day after Wednesday?", correct: ["thursday"] },
+        { type: "text", q: "31. What is the word for 'código postal' in English?", correct: ["zip code", "zipcode"] },
+        { type: "text", q: "32. What is the word for 'endereço' in English?", correct: ["address"] },
+        { type: "text", q: "33. Fill in the blank: 'S-C-H-U-L-T-Z.' '_____ you. You're in room 15.'", correct: ["thank"] },
+        { type: "text", q: "34. Fill in the blank: 'Excuse _____, are you Mr. Smith?'", correct: ["me"] },
+        { type: "text", q: "35. Fill in the blank: 'I don't _____.' (when you don't have the answer)", correct: ["know"] },
+        { type: "text", q: "36. Fill in the blank: '_____ at the board, please.'", correct: ["look"] },
+        { type: "text", q: "37. Fill in the blank: '_____ to page 9.'", correct: ["go"] },
+        { type: "text", q: "38. Complete with the verb to be: 'You _____ not in class 3.'", correct: ["are"] },
+        { type: "text", q: "39. Complete with the verb to be: '_____ I in room 2?'", correct: ["am"] },
+        { type: "text", q: "40. Fill in the blank: '_____ are my glasses?' 'They are in your bag.'", correct: ["where"] }
+    ];
+
+    const form = document.getElementById('quiz-form');
+    let timeLeft = 3600; 
+    let timer;
+
+    questions.forEach((q, index) => {
+        let qHTML = `<div class="question-card">`;
+        
+        if (q.image) { qHTML += q.image; }
+
+        qHTML += `<div class="question-title">${q.q}</div>`;
+        
+        if (q.type === "radio") {
+            qHTML += `<div class="options">`;
+            q.options.forEach((opt, i) => {
+                qHTML += `<label><input type="radio" name="q${index}" value="${i}"> ${opt}</label>`;
+            });
+            qHTML += `</div>`;
+        } else if (q.type === "text") {
+            qHTML += `<input type="text" name="q${index}" class="text-input" placeholder="Type your answer in English..." autocomplete="off" autocorrect="off" spellcheck="false">`;
+        }
+        
+        qHTML += `</div>`;
+        form.innerHTML += qHTML;
+    });
+
+    function startTimer() {
+        timer = setInterval(() => {
+            timeLeft--;
+            let m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            let s = (timeLeft % 60).toString().padStart(2, '0');
+            document.getElementById('timer').innerText = `${m}:${s}`;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                alert("Time's up! Enviando as respostas...");
+                submitQuiz();
+            }
+        }, 1000);
+    }
+
+    function submitQuiz() {
+        clearInterval(timer);
+        window.scrollTo(0, 0); 
+        let score = 0;
+        let reviewHTML = "";
+
+        questions.forEach((q, index) => {
+            let isCorrect = false;
+            let userText = "";
+            let correctText = "";
+
+            if (q.type === "radio") {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const ansIndex = selected ? parseInt(selected.value) : -1;
+                isCorrect = ansIndex === q.correct;
+                userText = ansIndex !== -1 ? q.options[ansIndex] : "Em branco";
+                correctText = q.options[q.correct];
+            } else if (q.type === "text") {
+                const inputEl = document.querySelector(`input[name="q${index}"]`);
+                userText = inputEl ? inputEl.value.trim() : "";
+                
+                // Comparação exata (ignora maiúsculas e minúsculas)
+                isCorrect = q.correct.some(ans => userText.toLowerCase() === ans.toLowerCase());
+                correctText = q.correct[0]; 
+                if (userText === "") userText = "Em branco";
+            }
+            
+            if (isCorrect) score += 0.25;
+
+            reviewHTML += `
+                <div class="review-item">
+                    <div class="question-title">${q.q}</div>
+                    <div class="review-answer">
+                        <span>Sua resposta: <strong>${userText}</strong></span>
+                        ${isCorrect 
+                            ? `<span class="correct-text">✔ Acertou!</span>` 
+                            : `<span class="wrong-text">✖ Errou. Correta(s): ${q.correct.join(" ou ")}</span>`}
+                    </div>
+                </div>
+            `;
+        });
+
+        document.getElementById('quiz-container').style.display = 'none';
+        document.getElementById('result-container').style.display = 'block';
+        
+        const scoreBox = document.getElementById('score-display');
+        scoreBox.innerHTML = `Sua Nota<br><span style="font-size: 1.5em">${score.toFixed(2)}</span> / 10.00`;
+        scoreBox.className = `score-box ${score >= 7 ? 'score-good' : 'score-bad'}`;
+        
+        document.getElementById('review-container').innerHTML = reviewHTML;
+    }
+
+    window.onload = startTimer;
+</script>
+
+</body>
+</html>
