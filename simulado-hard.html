@@ -233,7 +233,7 @@
     const questions = [
         // MÚLTIPLA ESCOLHA (10 Questões focadas em interpretação visual e gramática pontual)
         { type: "radio", image: `<div class="diagram-box">🧍‍♂️ <span class="arrow-far">➡ ➡ ➡</span> 🗝️🗝️</div>`, q: "1. Look at the image (Far). 'What are _____?'", options: ["those", "these", "this"], correct: 0 },
-        { type: "radio", image: `<div class="diagram-box">🧍‍♂️ <span class="arrow-near">➡</span> 📚</div>`, q: "2. Look at the image (Near). 'Is _____ a good dictionary?'", options: ["that", "this", "these"], correct: 1 },
+        { type: "radio", image: `<div class="diagram-box">🧍‍♂️ <span class="arrow-near">➡</span> 📘</div>`, q: "2. Look at the image (Near). 'Is _____ a good dictionary?'", options: ["that", "this", "these"], correct: 1 },
         { type: "radio", q: "3. 'Mark Zuckerberg is from the USA.' His nationality is:", options: ["USA", "American", "United States"], correct: 1 },
         { type: "radio", q: "4. '_____ you single?' 'No, I'm married.'", options: ["Are", "Is", "Am"], correct: 0 },
         { type: "radio", q: "5. 'Is Salma Hayek from Mexico?' 'Yes, _____.'", options: ["she is", "she's", "is she"], correct: 0 },
@@ -315,7 +315,7 @@
         }, 1000);
     }
 
-    function submitQuiz() {
+   function submitQuiz() {
         clearInterval(timer);
         window.scrollTo(0, 0); 
         let score = 0;
@@ -331,14 +331,14 @@
                 const ansIndex = selected ? parseInt(selected.value) : -1;
                 isCorrect = ansIndex === q.correct;
                 userText = ansIndex !== -1 ? q.options[ansIndex] : "Em branco";
+                // Pega o texto da alternativa correta
                 correctText = q.options[q.correct];
             } else if (q.type === "text") {
                 const inputEl = document.querySelector(`input[name="q${index}"]`);
                 userText = inputEl ? inputEl.value.trim() : "";
-                
-                // Comparação exata (ignora maiúsculas e minúsculas)
                 isCorrect = q.correct.some(ans => userText.toLowerCase() === ans.toLowerCase());
-                correctText = q.correct[0]; 
+                // Aplica o join apenas nas questões de texto
+                correctText = q.correct.join(" ou "); 
                 if (userText === "") userText = "Em branco";
             }
             
@@ -351,7 +351,7 @@
                         <span>Sua resposta: <strong>${userText}</strong></span>
                         ${isCorrect 
                             ? `<span class="correct-text">✔ Acertou!</span>` 
-                            : `<span class="wrong-text">✖ Errou. Correta(s): ${q.correct.join(" ou ")}</span>`}
+                            : `<span class="wrong-text">✖ Errou. Correta(s): ${correctText}</span>`}
                     </div>
                 </div>
             `;
